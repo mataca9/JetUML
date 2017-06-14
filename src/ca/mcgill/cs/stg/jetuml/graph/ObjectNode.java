@@ -43,7 +43,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	private static final int YGAP = 5;
 
 	private double aTopHeight;
-	private MultiLineString aName;
+	private MultiLineString aName, aType;
 	private ArrayList<ChildNode> aFields;
 
 	/**
@@ -52,7 +52,9 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	public ObjectNode()
 	{
 		aName = new MultiLineString(true);
+		aType = new MultiLineString(true);
 		aName.setUnderlined(true);
+		aType.setUnderlined(true);
 		setBounds(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		aFields = new ArrayList<>();
 	}
@@ -92,7 +94,11 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	@Override
 	public void layout(Graph pGraph, Graphics2D pGraphics2D, Grid pGrid)
 	{
-		Rectangle2D b = aName.getBounds(pGraphics2D); 
+		MultiLineString header = new MultiLineString();
+		header.setText(aName.getText());
+		if(aType!= null && !aType.getText().isEmpty())
+			header.setText(aName.getText() + " : " + aType.getText());
+		Rectangle2D b = header.getBounds(pGraphics2D); 
 		b.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT - YGAP));
 		double leftWidth = 0;
 		double rightWidth = 0;
@@ -148,7 +154,25 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		return aName;
 	}
-
+	
+	/**
+	 * Sets the type property value.
+	 * @param pType the new object type
+	 */
+	public void setType(MultiLineString pType)
+	{
+		aType = pType;
+	}
+	
+	/**
+	 * Gets the type property value.
+	 * @return the object type
+	 */
+	public MultiLineString getType()
+	{
+		return aType;
+	}
+	
 	@Override
 	public ObjectNode clone()
 	{
