@@ -47,6 +47,9 @@ public final class PropertyOrder
 		INSTANCE.addIndex(InterfaceNode.class, "methods", 2);
 		INSTANCE.addIndex(PackageNode.class, "name", 1);
 		INSTANCE.addIndex(PackageNode.class, "contents", 2);
+		INSTANCE.addIndex(ObjectNode.class, "name", 1);
+		INSTANCE.addIndex(ObjectNode.class, "type", 2);
+		INSTANCE.addIndex(ObjectNode.class, "attributes", 3);
 	}
 	
 	private HashMap<Class<?>, HashMap<String, Integer>> aProperties = new HashMap<>();
