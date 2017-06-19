@@ -42,10 +42,9 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	private static final int XGAP = 5;
 	private static final int YGAP = 5;
 
-	private double aTopHeight, aMiddleHeight;
+	private double aTopHeight;
 	private MultiLineString aName, aType, aAttributes;
-	private ArrayList<ChildNode> aFields;
-	
+	private ArrayList<ChildNode> aFields;	
 
 	/**
 	 * Construct an object node with a default size.
@@ -69,16 +68,17 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		super.draw(pGraphics2D);
 		Rectangle2D top = getTopRectangle();
-		Rectangle2D middle = getMiddleRectangle();
 		pGraphics2D.draw(top);
 		pGraphics2D.draw(getBounds());
 		aName.draw(pGraphics2D, top);
 		
-		if(!aType.getText().isEmpty()){	
-			aType.draw(pGraphics2D, top);
+		if(!aType.getText().isEmpty()){
+			//aType.draw(pGraphics2D, top);
 		}
 		
-		aAttributes.draw(pGraphics2D, middle);
+		if(!aAttributes.getText().isEmpty()){		
+			aAttributes.draw(pGraphics2D, getMidRectangle());
+		}
 	}
 
 	/* 
@@ -103,17 +103,21 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		return new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), getBounds().getWidth(), aTopHeight);
 	}
 	
-	public Rectangle2D getMiddleRectangle()
+	public Rectangle2D getMidRectangle()
 	{
-		return new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), getBounds().getWidth(), aTopHeight);
+		return new Rectangle2D.Double(getBounds().getX(), getBounds().getY() + getBounds().getHeight()/2, getBounds().getWidth(), aTopHeight);
 	}
-
 
 	@Override
 	public void layout(Graph pGraph, Graphics2D pGraphics2D, Grid pGrid)
-	{
+	{		
 		MultiLineString header = new MultiLineString();
 		header.setText(aName.getText());
+		
+		if(aType!= null && !aType.getText().isEmpty()){
+			
+		}
+			
 		Rectangle2D b = header.getBounds(pGraphics2D); 
 		b.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT - YGAP));
 		double leftWidth = 0;
@@ -124,12 +128,17 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		{
 			height = YGAP;
 		}
+		
+		if(aAttributes!= null && !aAttributes.getText().isEmpty()){
+			height += YGAP * 2 + aAttributes.getBounds(pGraphics2D).getHeight();
+		}
+		
 		for(int i = 0; i < fields.size(); i++)
 		{
 			FieldNode f = (FieldNode)fields.get(i);
 			f.layout(pGraph, pGraphics2D, pGrid);
 			Rectangle2D b2 = f.getBounds();
-			height += b2.getBounds().getHeight() + YGAP;   
+			height += b2.getBounds().getHeight() + YGAP;
 			double axis = f.getAxisX();
 			leftWidth = Math.max(leftWidth, axis);
 			rightWidth = Math.max(rightWidth, b2.getWidth() - axis);
@@ -137,11 +146,13 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		double width = 2 * Math.max(leftWidth, rightWidth) + 2 * XGAP;
 		width = Math.max(width, b.getWidth());
 		width = Math.max(width, DEFAULT_WIDTH);
+		width = Math.max(width, aAttributes.getBounds(pGraphics2D).getWidth());
+		width = Math.max(width, aType.getBounds(pGraphics2D).getWidth());
+		
 		b = new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), width, b.getHeight() + height);
 		pGrid.snap(b);
 		setBounds(b);
 		aTopHeight = b.getHeight() - height;
-		aMiddleHeight = aTopHeight + 25;
 		double ytop = b.getY() + aTopHeight + YGAP;
 		double xmid = b.getCenterX();
 		for(int i = 0; i < fields.size(); i++)
