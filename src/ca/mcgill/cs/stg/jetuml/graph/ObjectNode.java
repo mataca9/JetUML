@@ -54,7 +54,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		aName = new MultiLineString(true);
 		aName.setUnderlined(true);
-		aType.setJustification(MultiLineString.LEFT);
+		aName.setJustification(MultiLineString.LEFT);
 		aType = new MultiLineString(true);
 		aType.setJustification(MultiLineString.LEFT);
 		aType.setUnderlined(true);
