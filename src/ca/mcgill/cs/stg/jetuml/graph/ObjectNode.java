@@ -38,13 +38,14 @@ import ca.mcgill.cs.stg.jetuml.framework.MultiLineString;
 public class ObjectNode extends RectangularNode implements ParentNode
 {
 	private static final int DEFAULT_WIDTH = 80;
-	private static final int DEFAULT_HEIGHT = 60;
+	private static final int DEFAULT_HEIGHT = 80;
 	private static final int XGAP = 5;
 	private static final int YGAP = 5;
 
-	private double aTopHeight;
-	private MultiLineString aName, aType;
+	private double aTopHeight, aMiddleHeight;
+	private MultiLineString aName, aType, aAttributes;
 	private ArrayList<ChildNode> aFields;
+	
 
 	/**
 	 * Construct an object node with a default size.
@@ -52,9 +53,13 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	public ObjectNode()
 	{
 		aName = new MultiLineString(true);
-		aType = new MultiLineString(true);
 		aName.setUnderlined(true);
+		aType.setJustification(MultiLineString.LEFT);
+		aType = new MultiLineString(true);
+		aType.setJustification(MultiLineString.LEFT);
 		aType.setUnderlined(true);
+		aAttributes = new MultiLineString();
+		aAttributes.setJustification(MultiLineString.LEFT);
 		setBounds(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		aFields = new ArrayList<>();
 	}
@@ -64,9 +69,16 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		super.draw(pGraphics2D);
 		Rectangle2D top = getTopRectangle();
+		Rectangle2D middle = getMiddleRectangle();
 		pGraphics2D.draw(top);
 		pGraphics2D.draw(getBounds());
 		aName.draw(pGraphics2D, top);
+		
+		if(!aType.getText().isEmpty()){	
+			aType.draw(pGraphics2D, top);
+		}
+		
+		aAttributes.draw(pGraphics2D, middle);
 	}
 
 	/* 
@@ -90,14 +102,18 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		return new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), getBounds().getWidth(), aTopHeight);
 	}
+	
+	public Rectangle2D getMiddleRectangle()
+	{
+		return new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), getBounds().getWidth(), aTopHeight);
+	}
+
 
 	@Override
 	public void layout(Graph pGraph, Graphics2D pGraphics2D, Grid pGrid)
 	{
 		MultiLineString header = new MultiLineString();
 		header.setText(aName.getText());
-		if(aType!= null && !aType.getText().isEmpty())
-			header.setText(aName.getText() + " : " + aType.getText());
 		Rectangle2D b = header.getBounds(pGraphics2D); 
 		b.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT - YGAP));
 		double leftWidth = 0;
@@ -125,6 +141,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		pGrid.snap(b);
 		setBounds(b);
 		aTopHeight = b.getHeight() - height;
+		aMiddleHeight = aTopHeight + 25;
 		double ytop = b.getY() + aTopHeight + YGAP;
 		double xmid = b.getCenterX();
 		for(int i = 0; i < fields.size(); i++)
@@ -178,6 +195,8 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		ObjectNode cloned = (ObjectNode)super.clone();
 		cloned.aName = aName.clone();
+		cloned.aAttributes = aAttributes.clone();
+		cloned.aType = aType.clone();
 		cloned.aFields = new ArrayList<>();
 		
 		for( ChildNode child : aFields )
@@ -248,5 +267,40 @@ public class ObjectNode extends RectangularNode implements ParentNode
 				}
 			}
 		});
+	}
+	
+	/**
+     * Sets the attributes property value.
+     * @param pNewValue the attributes of this class
+	 */
+	public void setAttributes(MultiLineString pNewValue)
+	{
+		aAttributes = pNewValue;
+	}
+
+	/**
+     * Gets the attributes property value.
+     * @return the attributes of this class
+	 */
+	public MultiLineString getAttributes()
+	{
+		return aAttributes;
+	}
+	
+	protected boolean needsMiddleCompartment()
+	{
+		return !aAttributes.getText().isEmpty();
+	}
+	
+	protected Rectangle2D computeMiddle(Graphics2D pGraphics2D)
+	{
+		if( !needsMiddleCompartment() )
+		{
+			return new Rectangle2D.Double(0, 0, 0, 0);
+		}
+			
+		Rectangle2D attributes = aAttributes.getBounds(pGraphics2D);
+		attributes.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, 20));
+		return attributes;
 	}
 }
