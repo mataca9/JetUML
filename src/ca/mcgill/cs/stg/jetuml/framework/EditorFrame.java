@@ -458,7 +458,7 @@ public class EditorFrame extends JFrame
 			   open(argument);
 		   }
 	   } 
-	   /*@JoelChev may be needed later*/
+	   // @JoelChev may be needed later
 	   //setTitle();
    	}
    
