@@ -43,7 +43,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	private static final int YGAP = 5;
 
 	private double aTopHeight;
-	private MultiLineString aName, aType, aAttributes;
+	private MultiLineString aName, aType;
 	private ArrayList<ChildNode> aFields;	
 
 	/**
@@ -53,8 +53,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		aName = new MultiLineString(true);
 		aType = new MultiLineString(true);
-		aAttributes = new MultiLineString();
-		aAttributes.setJustification(MultiLineString.LEFT);
 		setBounds(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		aFields = new ArrayList<>();
 	}
@@ -75,9 +73,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		}
 		header.draw(pGraphics2D, top);
 		
-		if(!aAttributes.getText().isEmpty()){		
-			aAttributes.draw(pGraphics2D, getMidRectangle());
-		}
 	}
 
 	/* 
@@ -128,10 +123,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 			height = YGAP;
 		}
 		
-		if(aAttributes!= null && !aAttributes.getText().isEmpty()){
-			height += YGAP * 2 + aAttributes.getBounds(pGraphics2D).getHeight();
-		}
-		
 		for(int i = 0; i < fields.size(); i++)
 		{
 			FieldNode f = (FieldNode)fields.get(i);
@@ -145,7 +136,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		double width = 2 * Math.max(leftWidth, rightWidth) + 2 * XGAP;
 		width = Math.max(width, b.getWidth());
 		width = Math.max(width, DEFAULT_WIDTH);
-		width = Math.max(width, aAttributes.getBounds(pGraphics2D).getWidth());
 		width = Math.max(width, aType.getBounds(pGraphics2D).getWidth());
 		
 		b = new Rectangle2D.Double(getBounds().getX(), getBounds().getY(), width, b.getHeight() + height);
@@ -205,7 +195,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	{
 		ObjectNode cloned = (ObjectNode)super.clone();
 		cloned.aName = aName.clone();
-		cloned.aAttributes = aAttributes.clone();
 		cloned.aType = aType.clone();
 		cloned.aFields = new ArrayList<>();
 		
@@ -279,38 +268,4 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		});
 	}
 	
-	/**
-     * Sets the attributes property value.
-     * @param pNewValue the attributes of this class
-	 */
-	public void setAttributes(MultiLineString pNewValue)
-	{
-		aAttributes = pNewValue;
-	}
-
-	/**
-     * Gets the attributes property value.
-     * @return the attributes of this class
-	 */
-	public MultiLineString getAttributes()
-	{
-		return aAttributes;
-	}
-	
-	protected boolean needsMiddleCompartment()
-	{
-		return !aAttributes.getText().isEmpty();
-	}
-	
-	protected Rectangle2D computeMiddle(Graphics2D pGraphics2D)
-	{
-		if( !needsMiddleCompartment() )
-		{
-			return new Rectangle2D.Double(0, 0, 0, 0);
-		}
-			
-		Rectangle2D attributes = aAttributes.getBounds(pGraphics2D);
-		attributes.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, 20));
-		return attributes;
-	}
 }
