@@ -52,11 +52,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	public ObjectNode()
 	{
 		aName = new MultiLineString(true);
-		aName.setUnderlined(true);
-		aName.setJustification(MultiLineString.LEFT);
 		aType = new MultiLineString(true);
-		aType.setJustification(MultiLineString.LEFT);
-		aType.setUnderlined(true);
 		aAttributes = new MultiLineString();
 		aAttributes.setJustification(MultiLineString.LEFT);
 		setBounds(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT));
@@ -70,11 +66,14 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		Rectangle2D top = getTopRectangle();
 		pGraphics2D.draw(top);
 		pGraphics2D.draw(getBounds());
-		aName.draw(pGraphics2D, top);
 		
-		if(!aType.getText().isEmpty()){
-			//aType.draw(pGraphics2D, top);
+		MultiLineString header = new MultiLineString(true);
+		header.setText(aName.getText());
+		header.setUnderlined(true);
+		if(aType!= null && !aType.getText().isEmpty()){
+			header.setText(aName.getText() + " : " + aType.getText() );
 		}
+		header.draw(pGraphics2D, top);
 		
 		if(!aAttributes.getText().isEmpty()){		
 			aAttributes.draw(pGraphics2D, getMidRectangle());
@@ -115,7 +114,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		header.setText(aName.getText());
 		
 		if(aType!= null && !aType.getText().isEmpty()){
-			
+			header.setText(aName.getText() + " : " + aType.getText() );
 		}
 			
 		Rectangle2D b = header.getBounds(pGraphics2D); 
