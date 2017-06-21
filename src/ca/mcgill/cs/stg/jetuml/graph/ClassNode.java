@@ -21,9 +21,10 @@
 
 package ca.mcgill.cs.stg.jetuml.graph;
 
+
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-
+import ca.mcgill.cs.stg.jetuml.framework.ClassService;
 import ca.mcgill.cs.stg.jetuml.framework.MultiLineString;
 
 /**
@@ -32,7 +33,7 @@ import ca.mcgill.cs.stg.jetuml.framework.MultiLineString;
 public class ClassNode extends InterfaceNode
 {
 	private MultiLineString aAttributes;
-
+	private int id;
 	/**
      * Construct a class node with a default size.
 	 */
@@ -72,7 +73,11 @@ public class ClassNode extends InterfaceNode
 	{
 		return aAttributes;
 	}
-	
+	@Override
+	public void setName(MultiLineString pName){
+		this.aName = pName;
+		ClassService.setClass(id, this);
+	}
 	/**
 	 * @return True if the node requires a bottom compartment.
 	 */
@@ -105,6 +110,7 @@ public class ClassNode extends InterfaceNode
 	{
 		ClassNode cloned = (ClassNode)super.clone();
 		cloned.aAttributes = aAttributes.clone();
+		cloned.id = ClassService.addClass(this);
 		return cloned;
 	}
 }

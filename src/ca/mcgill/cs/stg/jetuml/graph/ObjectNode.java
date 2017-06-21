@@ -31,7 +31,7 @@ import java.util.List;
 
 import ca.mcgill.cs.stg.jetuml.framework.Grid;
 import ca.mcgill.cs.stg.jetuml.framework.MultiLineString;
-
+import ca.mcgill.cs.stg.jetuml.framework.ClassService;
 /**
  *  An object node in an object diagram.
  */
@@ -41,7 +41,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	private static final int DEFAULT_HEIGHT = 80;
 	private static final int XGAP = 5;
 	private static final int YGAP = 5;
-
 	private double aTopHeight;
 	private MultiLineString aName, aType;
 	private ArrayList<ChildNode> aFields;	
@@ -55,6 +54,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		aType = new MultiLineString(true);
 		setBounds(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		aFields = new ArrayList<>();
+		
 	}
 
 	@Override
@@ -197,7 +197,11 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		cloned.aName = aName.clone();
 		cloned.aType = aType.clone();
 		cloned.aFields = new ArrayList<>();
-		
+		if(ClassService.listClasses().size() > 0){
+			for(ClassNode n : ClassService.listClasses()){
+				System.out.println("HAHA ->" + n.getName());
+			}
+		}
 		for( ChildNode child : aFields )
 		{
 			// We can't use addChild(...) here because of the interaction with the original parent.
