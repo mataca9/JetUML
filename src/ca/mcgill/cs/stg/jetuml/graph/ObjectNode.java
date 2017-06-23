@@ -68,8 +68,12 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		MultiLineString header = new MultiLineString(true);
 		header.setText(aName.getText());
 		header.setUnderlined(true);
-		if(aType!= null && !aType.getText().isEmpty()){
-			header.setText(aName.getText() + " : " + aType.getText() );
+		for(ClassNode n : ClassService.listClasses()){
+			if(n.getName().getText().equals(aType.getText())){
+				header.setText(aName.getText() + " : " + aType.getText() );
+				break;
+			}
+			System.out.println(n.getName());
 		}
 		header.draw(pGraphics2D, top);
 		
@@ -179,6 +183,7 @@ public class ObjectNode extends RectangularNode implements ParentNode
 	public void setType(MultiLineString pType)
 	{
 		aType = pType;
+		
 	}
 	
 	/**
@@ -197,11 +202,13 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		cloned.aName = aName.clone();
 		cloned.aType = aType.clone();
 		cloned.aFields = new ArrayList<>();
-		if(ClassService.listClasses().size() > 0){
-			for(ClassNode n : ClassService.listClasses()){
-				System.out.println("HAHA ->" + n.getName());
-			}
-		}
+//		if(ClassService.listClasses().size() > 0){
+//			System.out.println("Available Classes: ");
+//			for(ClassNode n : ClassService.listClasses()){
+//				System.out.println("->" + n.getName());
+//			}
+//		}else
+//			System.out.println("No Classes available. ");
 		for( ChildNode child : aFields )
 		{
 			// We can't use addChild(...) here because of the interaction with the original parent.
