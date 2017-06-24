@@ -69,16 +69,33 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		header.setText(aName.getText());
 		header.setUnderlined(true);
 		for(ClassNode n : ClassService.listClasses()){
+			
 			if(n.getName().getText().equals(aType.getText())){
+				
 				header.setText(aName.getText() + " : " + aType.getText() );
+				String[] attrs = n.getAttributes().getText().split("\\r?\\n");
+				int yIncrementer = 15;
+				for(String atribute : attrs){
+					if(atribute == null || atribute.trim() == "")
+						continue;
+					FieldNode f = new FieldNode();
+					f.setBounds(this.getMidRectangle());
+					f.setBounds(new Rectangle2D.Double(this.getMidRectangle().getX(),
+							this.getMidRectangle().getY() + yIncrementer,
+							this.getMidRectangle().getWidth(), 15));
+					MultiLineString fieldName = new MultiLineString();
+					fieldName.setText(atribute.trim());
+					f.setName(fieldName);
+					addFieldIfNotExists(f);
+					yIncrementer += f.getBounds().getHeight();
+				}
 				break;
 			}
 			System.out.println(n.getName());
 		}
-		header.draw(pGraphics2D, top);
-		
+		header.draw(pGraphics2D, top);	
 	}
-
+	
 	/* 
 	 * Object Nodes are now responsible for translating their Field Node children.
 	 */
@@ -151,11 +168,16 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		for(int i = 0; i < fields.size(); i++)
 		{
 			FieldNode f = (FieldNode)fields.get(i);
-			Rectangle2D b2 = f.getBounds();
-			f.setBounds(new Rectangle2D.Double(xmid - f.getAxisX(), ytop, f.getAxisX() + rightWidth, b2.getHeight()));
-			f.setBoxWidth(rightWidth);
+			rearrangeFieldNode(f, rightWidth, xmid, ytop);
 			ytop += f.getBounds().getHeight() + YGAP;
 		}
+	}
+	
+	private void rearrangeFieldNode(FieldNode node, double width, double xmid, double ytop){
+		aTopHeight = this.getMidRectangle().getHeight();
+		node.setBounds(new Rectangle2D.Double(xmid - node.getAxisX(), ytop,
+				node.getAxisX() + width, node.getBounds().getHeight()));
+		node.setBoxWidth(width);
 	}
 
 	/**
@@ -202,13 +224,6 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		cloned.aName = aName.clone();
 		cloned.aType = aType.clone();
 		cloned.aFields = new ArrayList<>();
-//		if(ClassService.listClasses().size() > 0){
-//			System.out.println("Available Classes: ");
-//			for(ClassNode n : ClassService.listClasses()){
-//				System.out.println("->" + n.getName());
-//			}
-//		}else
-//			System.out.println("No Classes available. ");
 		for( ChildNode child : aFields )
 		{
 			// We can't use addChild(...) here because of the interaction with the original parent.
@@ -237,9 +252,17 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		aFields.add(pIndex, pNode);
 		pNode.setParent(this);
 		// prmr unclear why we need this
-//		Rectangle2D b = getBounds();
-//		b.add(new Rectangle2D.Double(b.getX(), b.getY() + b.getHeight(), FieldNode.DEFAULT_WIDTH, FieldNode.DEFAULT_HEIGHT));
-//		setBounds(b);
+		//Rectangle2D b = getBounds();
+		//b.add(new Rectangle2D.Double(b.getX(), b.getY() + b.getHeight(), FieldNode.DEFAULT_WIDTH, FieldNode.DEFAULT_HEIGHT));
+		//setBounds(b);
+	}
+	public void addFieldIfNotExists(FieldNode pNode){
+		for(int i = 0; i < aFields.size(); i++){
+			FieldNode f = (FieldNode)aFields.get(i);
+			if(f.getName().getText().trim().equals(pNode.getName().getText().trim()))
+				return;		
+		}
+		addChild(aFields.size(), pNode);
 	}
 
 	@Override
@@ -257,6 +280,10 @@ public class ObjectNode extends RectangularNode implements ParentNode
 		}
 		aFields.remove(pNode);
 		pNode.setParent(null);
+	}
+	public void removeAllChild()
+	{
+		aFields = new ArrayList<>();
 	}
 	
 	/**
