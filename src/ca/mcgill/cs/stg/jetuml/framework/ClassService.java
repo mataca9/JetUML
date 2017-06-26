@@ -24,5 +24,9 @@ public class ClassService {
 	public static List<ClassNode> listClasses(){
 		return classes;
 	}
+	
+	public static void clearClasses(){
+		classes = new ArrayList<ClassNode>();
+	}
 
 }
