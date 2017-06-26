@@ -48,6 +48,7 @@ public class TestClassService
 	public void setup()
 	{
 		aNode1 = new ClassNode();
+		aNode2 = new ClassNode();
 	}
 	
 	@Test
